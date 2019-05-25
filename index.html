@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>World Happiness</title>
+    <meta charset="utf-8"/>
+    <meta name="description" content="World Happiness"/>
+    <meta name="author" content="Sagar Gurtu"/>
+    <meta name="keywords" content="world happiness report, world happiness, happiness, world gallup poll, life ladder">
+    <link rel="stylesheet" href="css/rangeslide.min.css"/>
+    <link rel="stylesheet" href="css/style.min.css"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <script src="js/jquery-3.4.0.min.js"></script>
+    <script src="js/rangeslide.min.js"></script>
+    <script src="js/math-functions.min.js"></script>
+    <script src="js/d3.v5.min.js"></script>
+    <script src="js/autocomplete.min.js"></script>
+    <script src="js/main.min.js"></script>
+</head>
+<body>
+<svg id="defs">
+    <defs>
+        <linearGradient id="vbluegrad" x1="50%" y1="100%" x2="50%" y2="0%">
+            <stop offset="0%" style="stop-color:rgb(73,90,255);stop-opacity:1"></stop>
+            <stop offset="100%" style="stop-color:rgb(10,207,254);stop-opacity:1"></stop>
+        </linearGradient>
+        <linearGradient id="vyellowgrad" x1="50%" y1="100%" x2="50%" y2="0%">
+            <stop offset="0%" style="stop-color:rgb(248,54,0);stop-opacity:1"></stop>
+            <stop offset="100%" style="stop-color:rgb(249,212,35);stop-opacity:1"></stop>
+        </linearGradient>
+        <linearGradient id="vgreengrad" x1="50%" y1="100%" x2="50%" y2="0%">
+            <stop offset="0%" style="stop-color:#00B712;stop-opacity:1"></stop>
+            <stop offset="100%" style="stop-color:#5AFF15;stop-opacity:1"></stop>
+        </linearGradient>
+        <linearGradient id="ygrad" x1="0%" y1="50%" x2="100%" y2="50%">
+            <stop offset="0%" style="stop-color:rgb(248,54,0);stop-opacity:1"></stop>
+            <stop offset="100%" style="stop-color:rgb(249,212,35);stop-opacity:1"></stop>
+        </linearGradient>
+        <linearGradient id="bluegrad" x1="0%" y1="50%" x2="100%" y2="50%">
+            <stop offset="0%" style="stop-color:rgb(73,90,255);stop-opacity:1"></stop>
+            <stop offset="100%" style="stop-color:rgb(10,207,254);stop-opacity:1"></stop>
+        </linearGradient>
+        <linearGradient id="yellowgrad" x1="0%" y1="50%" x2="100%" y2="50%">
+            <stop offset="0%" style="stop-color:rgb(248,54,0);stop-opacity:1"></stop>
+            <stop offset="50%" style="stop-color:rgb(249,212,35);stop-opacity:1"></stop>
+        </linearGradient>
+        <linearGradient id="redgrad" x1="0%" y1="50%" x2="100%" y2="50%">
+            <stop offset="0%" style="stop-color:rgba(231,16,2,1);stop-opacity:1"></stop>
+            <stop offset="100%" style="stop-color:rgba(236,150,48,1);stop-opacity:1"></stop>
+        </linearGradient>
+        <linearGradient id="pinkgrad" x1="0%" y1="50%" x2="100%" y2="50%">
+            <stop offset="0%" style="stop-color:#FF4081;stop-opacity:1"></stop>
+            <stop offset="100%" style="stop-color:#EE8E6B;stop-opacity:1"></stop>
+        </linearGradient>
+        <linearGradient id="greengrad" x1="0%" y1="50%" x2="100%" y2="50%">
+            <stop offset="0%" style="stop-color:#00B712;stop-opacity:1"></stop>
+            <stop offset="100%" style="stop-color:#5AFF15;stop-opacity:1"></stop>
+        </linearGradient>
+        <linearGradient id="purplegrad" x1="0%" y1="50%" x2="100%" y2="50%">
+            <stop offset="0%" style="stop-color:rgba(115,22,184,1);stop-opacity:1"></stop>
+            <stop offset="75%" style="stop-color:rgba(191,99,220,1);stop-opacity:1"></stop>
+        </linearGradient>
+        background-image: linear-gradient( 109.6deg, rgba(191,99,220,1) 11.2%, rgba(115,22,184,1) 81.2% );
+        <linearGradient id="gradGrey" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#222;stop-opacity:1"></stop>
+            <stop offset="100%" style="stop-color:#444;stop-opacity:1"></stop>
+        </linearGradient>
+        <filter id="glow">
+            <feColorMatrix type="matrix"
+                           values="0 0 0 1 0
+                                   0 0 0 1 0
+                                   0 0 0 1 0
+                                   0 0 0 1 0">
+            </feColorMatrix>
+            <feGaussianBlur stdDeviation="12" result="coloredBlur"></feGaussianBlur>
+            <feMerge>
+                <feMergeNode in="coloredBlur"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+
+    </defs>
+</svg>
+<nav id="menu">
+    <img id="earth" src="images/earth.png" alt="Earth"/>
+    <img id="charts" src="images/bar.png" alt="Charts"/>
+    <img id="analysis" src="images/analysis.png" alt="Analysis"/>
+    <img id="rankings" src="images/ranking.png" alt="Rankings"/>
+    <img id="about" src="images/happy.png" alt="About"/>
+</nav>
+<div id="drawer">
+    <div id="content"></div>
+    <span id="close_drawer">&times;</span>
+</div>
+<div id="main_body">
+    <div id="earth_body">
+        <svg id="earth_container" class="clear"></svg>
+        <div id="search">
+            <span class="autocomplete">
+                <input id="search_input" type="text" placeholder="Search country">
+            </span>
+        </div>
+        <div id="year_slider_container" class="clear"></div>
+        <img id="playpause" src="images/play.png" title="Play/Pause" alt="Play/Pause"/>
+        <img id="rotate" src="images/rotate.png" title="Rotate 360" alt="Rotate 360"/>
+        <div id="earth_legend">
+            <div id="legend_start"></div>
+            <div id="legend_end"></div>
+            <br/>
+            <img id="color_axis" src="images/cool.png"
+                 height="8"
+                 alt="cool">
+            <br/>
+        </div>
+        <div id="legend_name"></div>
+    </div>
+    <div id="charts_body">
+        <div id="charts_body_container">
+
+            <div class="column1">
+                <div id="happiness_rank" class="clear"></div>
+                <div id="ladder_container" class="clear"></div>
+                <div id="info_container" class="clear"></div>
+            </div>
+            <div class="column2">
+                <div id="life_container" class="clear"></div>
+                <div id="gdp_container" class="clear"></div>
+                <div id="compare_container" class="clear"></div>
+            </div>
+            <div class="row3">
+                <div id="social_container" class="clear"></div>
+                <div id="freedom_container" class="clear"></div>
+                <div id="generosity_container" class="clear"></div>
+                <div id="corruption_container" class="clear"></div>
+            </div>
+
+
+        </div>
+    </div>
+    <div id="analysis_body">
+        <div id="pca_container" class="analysis_hide">
+            <div class="column_pca">
+                <div id="pca_chart" class="clear"></div>
+                <div id="continent_chart" class="clear"></div>
+            </div>
+            <div class="column_rank">
+                <div id="country_rank_chart" class="clear"></div>
+            </div>
+        </div>
+        <div id="waterfall_container" class="analysis_hide">
+            <div id="waterfall_controls" class="clear"></div>
+            <div id="waterfall_chart" class="clear"></div>
+        </div>
+        <div id="id_container" class="analysis_hide">
+            <div id="id_chart" class="clear"></div>
+        </div>
+        <div id="corr_container" class="analysis_hide">
+            <div id="corr_chart" class="clear"></div>
+        </div>
+        <div id="loadings_container" class="analysis_hide">
+            <div id="loadings_chart" class="clear"></div>
+        </div>
+    </div>
+    <div id="rankings_body">
+        <div id="rankings_body_container">
+            <div id="rankings_chart" class="clear"></div>
+        </div>
+    </div>
+    <div id="about_body">
+        <div id="purpose">The purpose of this project is to analyze the significant factors that contribute to happiness
+            and how measurements of well-being can be used effectively to evaluate the progress of countries and their
+            governments. These factors include social support, life expectancy at birth, freedom to make life choices,
+            generosity, etc. Quantitative measures of happiness can be used in cognitive life evaluations, emotional
+            reports, assessing the state of global happiness and causes of miseries and to help guide
+            governments administer public policies. It can be used to achieve a deeper insight into how
+            socio-economic factors can be causally related to the happiness of the nations’ populous.
+            <br/>
+            <br/>
+            The World Happiness Report is a landmark survey of the state of global happiness. It is
+            published annually by United Nations Sustainable Development Solutions Network. It
+            contains articles, and rankings of national happiness based on respondent ratings of their
+            own lives, which the report also correlates with various life factors. The happiness scores
+            and rankings use data from the Gallup World Poll conducted in over 150 countries. The
+            scores are based on answers to the main life evaluation question asked in the poll. This
+            question, known as the Cantril ladder, asks respondents to think of a ladder with the best
+            possible life for them being a 10 and the worst possible life being a 0 and to rate their
+            own current lives on that scale.
+            <br/>
+            <br/>
+            Figuring out what factors make people happy can lead us to prosper better as nations. A
+            well-being perspective offers potential advantages, including insights into what matters
+            to people directly, and a comprehensive and relatively non-judgmental view on
+            development. Several well-being measurement scores provide comprehensive sets of
+            indicators, which can be seen as a great advantage over approaches focusing only on
+            certain factors, say income or health. Also, a well-being approach to development
+            presents the potential to overcome the powerful distinction between ‘developed’ and
+            ‘developing’ countries. This would be the case if a well-being lens opens space to
+            recognize, rather than judge, culturally-specific values and development processes. The
+            UN’s 2011 resolution puts it well, “The pursuit of happiness is a fundamental human goal”.
+            <br/>
+            <br/>
+            The data has been collected from <a class="link" href="https://worldhappiness.report/ed/2019/">https://worldhappiness.report/ed/2019/</a>
+            which in turn gathers data from World Gallup Poll. The rankings generated in this project are
+            calculated using OLS regression and are not reflective of actual rankings, as described by the official
+            report, in any way.
+            <br/>
+            <br/>
+            Works best in Chrome.
+        </div>
+    </div>
+</div>
+<footer id="footer">
+    <span id="logo"> World Happiness &nbsp;|</span>
+    &nbsp;
+    Built using: D3.js
+    &nbsp;|&nbsp;
+    April 2019
+</footer>
+</body>
+</html>
